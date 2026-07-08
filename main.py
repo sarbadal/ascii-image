@@ -28,6 +28,12 @@ def main() -> None:
     print(df.head(n=30))
 
 
+# functions-framework --target=entry_point --debug
+def entry_point(request):
+    """Entry point for Google Cloud Function"""
+    return app
+
+
 if __name__ == "__main__":
     # ascii-image -MF images/imports/saturn.jpg -C 80 -S 35 -OF images/exports/saturn.jpg.txt -BW y
     main()

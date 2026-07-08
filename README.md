@@ -143,6 +143,7 @@ Available CLI options:
 - `--function-name` — Cloud Function name (default: `ascii-image-function`)
 - `--region` — Cloud Function deploy region (default: `us-central1`)
 - `--runtime` — Cloud Function runtime (default: `python311`)
+- `--entry-point` — Cloud Function entry point function name (default: `entry_point`)
 - `--dry-run` — print commands without making changes
 
 This script will:
@@ -156,7 +157,7 @@ This script will:
 Cloud Function details:
 
 - default function name: `ascii-image-function`
-- entrypoint function: `app`
+- entrypoint function: `entry_point` (exposed from `main.py`)
 - deploy region default: `us-central1`
 - runtime default: `python311`
 

@@ -68,7 +68,7 @@ def deploy_cloud_function(
     region: str,
     runtime: str,
     source_dir: Path,
-    entry_point: str = "app",
+    entry_point: str = "entry_point",
     allow_unauthenticated: bool = True,
     dry_run: bool = False,
 ) -> None:
@@ -104,6 +104,7 @@ def main() -> None:
     parser.add_argument("--function-name", default="ascii-image-function", help="Cloud Function name")
     parser.add_argument("--region", default="us-central1", help="Cloud Function deploy region")
     parser.add_argument("--runtime", default="python311", help="Cloud Function runtime")
+    parser.add_argument("--entry-point", default="entry_point", help="Cloud Function entry point function name")
     parser.add_argument("--dry-run", action="store_true", help="Print commands without making changes")
     args = parser.parse_args()
 
@@ -130,7 +131,7 @@ def main() -> None:
         region=args.region,
         runtime=args.runtime,
         source_dir=source_dir,
-        entry_point="app",
+        entry_point=args.entry_point,
         allow_unauthenticated=True,
         dry_run=args.dry_run,
     )
