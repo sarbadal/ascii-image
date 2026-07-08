@@ -1,10 +1,30 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>ASCII Image Converter</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ASCII Image Converter</title>
+    <meta name="description" content="Convert image files into ASCII art with adjustable columns, scale, and grayscale options." />
+    <meta property="og:title" content="ASCII Image Converter" />
+    <meta property="og:description" content="Convert image files into ASCII art with adjustable columns, scale, and grayscale options." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ url_for('index', _external=True) }}" />
+    <meta property="og:site_name" content="ascii-image" />
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:title" content="ASCII Image Converter" />
+    <meta property="twitter:description" content="Convert image files into ASCII art with adjustable columns, scale, and grayscale options." />
     <link rel="stylesheet" href="{{ static_url('style.css') }}" />
+    <script type="application/id+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "ASCII Image Converter",
+      "description": "Convert image files into ASCII art with adjustable columns, scale, and grayscale options.",
+      "applicationCategory": "GraphicsApplication",
+      "operatingSystem": "Web",
+      "url": "{{ url_for('index', _external=True) }}"
+    }
+    </script>
   </head>
   <body>
     <main class="page-shell">
