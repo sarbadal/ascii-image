@@ -100,6 +100,56 @@ ascii_lines = converter.convert_image_to_ascii()
 converter.save_to_file(ascii_lines, "images/exports/saturn_programmatic.txt")
 converter.to_dataframe().to_csv("images/exports/saturn_programmatic.txt.csv", index=False, header=False)
 ```
+## Flask Web App
+
+A lightweight Flask frontend is included under `webapp/`.
+
+Run it locally with:
+
+```bash
+python webapp/app.py
+```
+
+Then open `http://127.0.0.1:5000` to upload an image and generate ASCII art in your browser.
+
+## Deployment
+
+A deploy helper is included in `deployment.py` for Google Cloud deployment.
+
+You can pass bucket and project values directly on the command line, or use environment variables.
+
+```bash
+python deployment.py \
+  --bucket my-bucket \
+  --project my-gcp-project \
+  --location US \
+  --dry-run
+```
+
+Or with environment variables:
+
+```bash
+export GOOGLE_CLOUD_PROJECT=your-gcp-project
+export GCS_STATIC_BUCKET=your-static-bucket-name
+python deployment.py --dry-run
+```
+
+Available CLI options:
+
+- `--bucket` — GCS bucket name for static assets
+- `--project` — GCP project ID
+- `--location` — bucket location (default: `US`)
+- `--static-dir` — local directory containing static files (default: `webapp/static`)
+- `--dry-run` — print commands without making changes
+
+This script will:
+
+- create the bucket if it does not exist
+- grant public object read access for static hosting
+- upload `webapp/static/` to the bucket
+- print the public static base URL for `STATIC_BASE_URL`
+
+In production, set `STATIC_BASE_URL` to the URL printed by `deployment.py`.
 
 ## Notes
 

@@ -54,15 +54,16 @@ class AsciiImageConverter:
     def convert_image_to_ascii(self) -> list[str]:
         img_array: list[list[int]] = self.convert_to_array()
         ascii_img: list[str] = []
-        for r, row in enumerate(img_array):
+        for row in img_array:
+            line_chars: list[str] = []
             for col_luminance_val in row:
-                ascii_img.append("")
                 gsval: str = self.gray_scale_value(
                     col_luminance_val,
                     black_to_white=self.image.black_to_white,
                     more_levels=self.image.more_levels
                 )
-                ascii_img[r] += gsval
+                line_chars.append(gsval)
+            ascii_img.append("".join(line_chars))
 
         return ascii_img
 

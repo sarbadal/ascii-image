@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ASCII Image Converter</title>
+    <link rel="stylesheet" href="{{ static_url('style.css') }}" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">ascii-image</p>
+          <h1>Convert an image into ASCII art</h1>
+          <p class="subtitle">
+            Upload a photo, choose column width and scale, then preview the text output instantly.
+          </p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <form action="{{ url_for('index') }}" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="image_token" value="{{ image_token }}" />
+          <input type="hidden" name="image_name" value="{{ image_name }}" />
+
+          <div class="field">
+            <label for="imagefile">Upload image</label>
+            <input
+              type="file"
+              id="imagefile"
+              name="imagefile"
+              accept="image/*"
+              {% if not image_token %}required{% endif %}
+            />
+            {% if image_token %}
+            <p class="hint">Using previously uploaded image: {{ image_name }}. Upload a new file to replace it.</p>
+            {% endif %}
+          </div>
+
+          {% if image_token %}
+          <div class="preview-card">
+            <div class="preview-header">Current image preview</div>
+            <img src="{{ url_for('preview', token=image_token) }}" alt="Current uploaded image" class="preview-image" />
+          </div>
+          {% endif %}
+
+          <div class="field-grid">
+            <label>
+              Columns
+              <input type="number" name="columns" min="10" value="{{ columns }}" required />
+            </label>
+            <label>
+              Scale
+              <input type="number" name="scale" min="1" value="{{ scale }}" required />
+            </label>
+          </div>
+
+          <div class="checkbox-grid">
+            <label><input type="checkbox" name="blacktowhite" {% if black_to_white %}checked{% endif %} /> Black to white</label>
+            <label><input type="checkbox" name="morelevels" {% if more_levels %}checked{% endif %} /> More levels</label>
+          </div>
+
+          <button type="submit">Create ASCII art</button>
+        </form>
+
+        {% if error %}
+        <div class="banner banner-error">{{ error }}</div>
+        {% endif %}
+
+        {% if ascii_text %}
+        <div class="output-card">
+          <div class="output-header">
+            <div>
+              <h2>ASCII result</h2>
+            </div>
+            <div class="button-group">
+              <form action="{{ url_for('download') }}" method="post" class="download-form">
+                <textarea name="ascii_text" hidden>{{ ascii_text }}</textarea>
+                <button type="submit" class="download-button">Download result</button>
+              </form>
+            </div>
+          </div>
+          <pre>{{ ascii_text }}</pre>
+        </div>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>

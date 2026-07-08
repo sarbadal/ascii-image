@@ -11,6 +11,8 @@ requires-python = ">=3.12"
 dependencies = [
     "pandas>=2.2.3",
     "pillow>=11.0.0",
+    "Flask>=2.3.0",
+    "google-cloud-storage>=3.0.0",
 ]
 
 [project.scripts]
