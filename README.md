@@ -140,6 +140,9 @@ Available CLI options:
 - `--project` — GCP project ID
 - `--location` — bucket location (default: `US`)
 - `--static-dir` — local directory containing static files (default: `webapp/static`)
+- `--function-name` — Cloud Function name (default: `ascii-image-function`)
+- `--region` — Cloud Function deploy region (default: `us-central1`)
+- `--runtime` — Cloud Function runtime (default: `python311`)
 - `--dry-run` — print commands without making changes
 
 This script will:
@@ -147,7 +150,15 @@ This script will:
 - create the bucket if it does not exist
 - grant public object read access for static hosting
 - upload `webapp/static/` to the bucket
+- deploy the Flask app to Google Cloud Functions
 - print the public static base URL for `STATIC_BASE_URL`
+
+Cloud Function details:
+
+- default function name: `ascii-image-function`
+- entrypoint function: `app`
+- deploy region default: `us-central1`
+- runtime default: `python311`
 
 In production, set `STATIC_BASE_URL` to the URL printed by `deployment.py`.
 

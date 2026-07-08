@@ -15,8 +15,8 @@ def run_cmd(command: list[str], dry_run: bool = False) -> int:
     return result.returncode
 
 
-def create_bucket_if_missing(bucket_name: str, location: str = "US") -> storage.Bucket:
-    client = storage.Client()
+def create_bucket_if_missing(bucket_name: str, project: str | None = None, location: str = "US") -> storage.Bucket:
+    client = storage.Client(project=project) if project else storage.Client()
     bucket = client.bucket(bucket_name)
     if not bucket.exists():
         bucket = client.create_bucket(bucket, location=location)
@@ -53,8 +53,8 @@ def upload_files(bucket: storage.Bucket, source_dir: Path, destination_prefix: s
             print(f"Uploaded {relative_path} -> {blob_name}")
 
 
-def deploy_static(bucket_name: str, static_dir: Path, dry_run: bool = False) -> str:
-    bucket = create_bucket_if_missing(bucket_name)
+def deploy_static(bucket_name: str, project: str, static_dir: Path, dry_run: bool = False) -> str:
+    bucket = create_bucket_if_missing(bucket_name, project=project)
     ensure_public_object_access(bucket_name, dry_run=dry_run)
     upload_files(bucket, static_dir, destination_prefix="static")
     base_url = f"https://storage.googleapis.com/{bucket.name}/static"
@@ -62,12 +62,48 @@ def deploy_static(bucket_name: str, static_dir: Path, dry_run: bool = False) -> 
     return base_url
 
 
+def deploy_cloud_function(
+    function_name: str,
+    project: str,
+    region: str,
+    runtime: str,
+    source_dir: Path,
+    entry_point: str = "app",
+    allow_unauthenticated: bool = True,
+    dry_run: bool = False,
+) -> None:
+    command = [
+        "gcloud",
+        "functions",
+        "deploy",
+        function_name,
+        "--runtime",
+        runtime,
+        "--trigger-http",
+        "--entry-point",
+        entry_point,
+        "--source",
+        str(source_dir),
+        "--region",
+        region,
+        "--project",
+        project,
+    ]
+    if allow_unauthenticated:
+        command.append("--allow-unauthenticated")
+
+    run_cmd(command, dry_run=dry_run)
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Deploy static assets for the ascii-image Flask app to Google Cloud Storage.")
+    parser = argparse.ArgumentParser(description="Deploy static assets and a Flask app to Google Cloud.")
     parser.add_argument("--bucket", help="GCS bucket name for static assets")
     parser.add_argument("--project", help="GCP project ID")
     parser.add_argument("--location", default="US", help="GCS bucket location")
     parser.add_argument("--static-dir", default=str(Path(__file__).resolve().parents[0] / "webapp" / "static"), help="Local static directory to upload")
+    parser.add_argument("--function-name", default="ascii-image-function", help="Cloud Function name")
+    parser.add_argument("--region", default="us-central1", help="Cloud Function deploy region")
+    parser.add_argument("--runtime", default="python311", help="Cloud Function runtime")
     parser.add_argument("--dry-run", action="store_true", help="Print commands without making changes")
     args = parser.parse_args()
 
@@ -83,9 +119,21 @@ def main() -> None:
     if not static_dir.exists():
         raise FileNotFoundError(f"Static directory not found: {static_dir}")
 
-    base_url = deploy_static(bucket_name, static_dir, dry_run=args.dry_run)
+    base_url = deploy_static(bucket_name, project, static_dir, dry_run=args.dry_run)
     print("Copy this URL into STATIC_BASE_URL in your Cloud Function environment.")
     print(base_url)
+
+    source_dir = Path(__file__).resolve().parents[0]
+    deploy_cloud_function(
+        function_name=args.function_name,
+        project=project,
+        region=args.region,
+        runtime=args.runtime,
+        source_dir=source_dir,
+        entry_point="app",
+        allow_unauthenticated=True,
+        dry_run=args.dry_run,
+    )
 
 
 if __name__ == "__main__":

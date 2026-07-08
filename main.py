@@ -1,3 +1,6 @@
+from PIL import Image
+from webapp.app import app
+
 from ascii_image.gray_scale import AsciiImage
 from ascii_image.ascii_img_generator import AsciiImageConverter, load_image_into_gscale
 from ascii_image.to_csv import DataFrameLoader
